@@ -13,7 +13,17 @@ class BookCategory extends Component {
                 <div className="bookshelf-books">
                     <ol className="books-grid">
                         { books.map( (book) => (
-                            <Book key={book.bookContent.title+book.bookContent.authors+book.bookContent.imageLinks.smallThumbnail} 
+                            book.bookContent.imageLinks === undefined ? 
+                            <Book key={book.bookContent.title+book.bookContent.authors+book.bookContent.id} 
+                            id={book.bookContent.id}
+                            title={book.bookContent.title} 
+                            authors={book.bookContent.authors} 
+                            currentCategory={categoryName} 
+                            url=''
+                            handleChangeCategory={this.props.handleChangeCategory}/>
+                            :
+                            <Book key={book.bookContent.title+book.bookContent.authors+book.bookContent.id} 
+                                id={book.bookContent.id}
                                 title={book.bookContent.title} 
                                 authors={book.bookContent.authors} 
                                 currentCategory={categoryName} 

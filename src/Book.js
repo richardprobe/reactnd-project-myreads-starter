@@ -5,10 +5,11 @@ class Book extends Component{
     handleOnChange = (event) => {
         event.preventDefault();
         // call back to parent to change the book's category
-        this.props.handleChangeCategory(this.props.title, event.target.value);
+        this.props.handleChangeCategory(this.props.id, event.target.value);
     }
 
     render() {
+        const id = this.props.id;
         const title = this.props.title;
         const authors = this.props.authors;
         const url = this.props.url;
@@ -26,6 +27,7 @@ class Book extends Component{
                                 <option value="Want to Read">Want to Read</option>
                                 <option value="Finished Reading">Finished Reading</option>
                                 <option value="Uncategorized">Uncategorized</option>
+                                <option value="Results" disabled>Results</option>
                             </select>
                         </div>
                     </div>

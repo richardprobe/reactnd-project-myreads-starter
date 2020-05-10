@@ -13,22 +13,24 @@ class App extends React.Component {
   }
 
   state = {
-    books: [{'bookContent': {'authors': 'Richard Hsu', 'title': 'My Book', 'imageLinks': {'thumbnail' : ''}}, 'category': 'Currently Reading'}],
+    books: [],
     searchBooks: [{'bookContent': {'authors': 'Richard Hsu', 'title': 'My Book', 'imageLinks': {'thumbnail' : ''}}, 'category': 'Currently Reading'}],
     categories: ['Currently Reading', 'Want to Read', 'Finished Reading', 'Results', 'Uncategorized'] // not sure if i need this...
   };
 
-  handleChangeCategory(bookTitle, newCategory) {
-    const [targetBookContent] = this.state.books.filter( (mappedBook) => (mappedBook.bookContent.title === bookTitle)).map( (mappedBook) => (mappedBook.bookContent));
+  handleChangeCategory(bookId, newCategory) {
+    const [targetBookContent] = this.state.books.filter( (mappedBook) => (mappedBook.bookContent.id === bookId)).map( (mappedBook) => (mappedBook.bookContent));
 
     this.setState( (prevState) => ({
-      books: [...this.state.books.filter( (mappedBook) => (mappedBook.bookContent.title !== bookTitle)), {'category' : newCategory, 'bookContent' : targetBookContent}]
+      books: [...this.state.books.filter( (mappedBook) => (mappedBook.bookContent.id !== bookId)), {'category' : newCategory, 'bookContent' : targetBookContent}]
     }));
+
+    BooksAPI.update(bookId, newCategory)
   }
 
   handleSearch(query) {
     BooksAPI.search(query)
-      .then( (books) => books===undefined ? console.log(`no match for ${query}`) : books.map( (book) => ({'category' : this.state.categories[3], 'bookContent' : book})))
+      .then( (books) => books===undefined ? console.log(`no match for ${query}`) : books.map( (book) => ({'category' : this.state.categories[3], 'bookContent' : book}))  )
       .then( (mappedBooks) => {
         if (mappedBooks !== undefined) {
           this.setState( (prevState) => ({
@@ -51,7 +53,6 @@ class App extends React.Component {
   }
 
   doNothing() {
-
   }
 
   render() {
@@ -61,6 +62,7 @@ class App extends React.Component {
           <MainPage books={this.state.books} handleChangeCategory={this.handleChangeCategory}/>
         )} /> 
         <Route exact path='/search' render={ () => (
+
           <SearchPage books={this.state.books === undefined? this.doNothing() : this.state.books.filter( (book) => (book.category === this.state.categories[3]))} handleSearch={this.handleSearch} handleChangeCategory={this.handleChangeCategory}/>
         )} />
       </div>

@@ -10,6 +10,7 @@ class App extends React.Component {
     super(props);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleRemoveAllSearchResult = this.handleRemoveAllSearchResult.bind(this);
   }
 
   state = {
@@ -19,6 +20,7 @@ class App extends React.Component {
   };
 
   handleChangeCategory(bookId, newCategory) {
+    this.handleRemoveAllSearchResult();
     const [targetBookContent] = this.state.books.filter( (mappedBook) => (mappedBook.bookContent.id === bookId)).map( (mappedBook) => (mappedBook.bookContent));
 
     this.setState( (prevState) => ({
@@ -28,15 +30,23 @@ class App extends React.Component {
     BooksAPI.update(bookId, newCategory)
   }
 
+  handleRemoveAllSearchResult() {
+    this.setState( (prevState) => ({
+      books: [...prevState.books.filter( (mappedBook) => (mappedBook.category !== this.state.categories[3]))]
+    }));
+  }
+
   handleSearch(query) {
+    this.handleRemoveAllSearchResult();
     BooksAPI.search(query)
-      .then( (books) => books===undefined ? console.log(`no match for ${query}`) : books.map( (book) => ({'category' : this.state.categories[3], 'bookContent' : book}))  )
-      .then( (mappedBooks) => {
-        if (mappedBooks !== undefined) {
-          this.setState( (prevState) => ({
-            books: [...prevState.books, ...mappedBooks]
-          }));
-        }
+    .then( (books) => (books===undefined || books.error==='empty queue') ? console.log(`no match for ${query}`) : books.map( (book) => ({'category' : this.state.categories[3], 'bookContent' : book}))  )
+    .catch(e => {console.log(e)})
+    .then( (mappedBooks) => {
+      if (mappedBooks !== undefined) {
+        this.setState( (prevState) => ({
+          books: [...prevState.books, ...mappedBooks]
+        }));
+      }
     });
   }
   
@@ -63,7 +73,7 @@ class App extends React.Component {
         )} /> 
         <Route exact path='/search' render={ () => (
 
-          <SearchPage books={this.state.books === undefined? this.doNothing() : this.state.books.filter( (book) => (book.category === this.state.categories[3]))} handleSearch={this.handleSearch} handleChangeCategory={this.handleChangeCategory}/>
+          <SearchPage books={this.state.books === undefined? this.doNothing() : this.state.books.filter( (book) => (book.category === this.state.categories[3]))} handleSearch={this.handleSearch} handleRemoveAllSearchResult={this.handleRemoveAllSearchResult} handleChangeCategory={this.handleChangeCategory}/>
         )} />
       </div>
     )

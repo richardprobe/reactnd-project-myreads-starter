@@ -12,7 +12,7 @@ class SearchPage extends Component {
     this.setState({
       value: event.target.value
     });
-
+    this.props.handleRemoveAllSearchResult();
     this.props.handleSearch(this.state.value);
   }
 
@@ -29,12 +29,16 @@ class SearchPage extends Component {
     });
   }
 
+  handleOnClick = (event) => {
+    this.props.handleRemoveAllSearchResult();
+  }
+
   render() {
       return (  
         <div className="search-books">
           <div className="search-books-bar">
             <Link to='/'>
-              <button className="close-search">Close</button>
+              <button className="close-search" onClick={this.handleOnClick}>Close</button>
             </Link>
             
             <div className="search-books-input-wrapper">
